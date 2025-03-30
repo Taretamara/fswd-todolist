@@ -1,0 +1,106 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="text-center mt-4">To Do List</h1>
+
+      <!-- Section to add a new task -->
+      <div class="row">
+        <div class="col-8">
+          <input type="text" id="new-task-content" class="form-control" placeholder="Enter new task">
+        </div>
+        <div class="col-4">
+          <button class="btn btn-primary" id="add-task-button">Add Task</button>
+        </div>
+      </div>
+
+      <!-- Section to list all tasks -->
+      <div class="row" id="tasks"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Sample hardcoded tasks for demonstration
+const tasks = [
+  { id: 1, content: 'Task 1', completed: false },
+  { id: 2, content: 'Task 2', completed: true },
+  { id: 3, content: 'Task 3', completed: false }
+];
+
+// Render tasks in the DOM
+function renderTasks() {
+  const tasksContainer = document.getElementById('tasks');
+  tasksContainer.innerHTML = '';  // Clear existing tasks
+
+  if (!Array.isArray(tasks)) {
+    console.error('Error: Tasks data is not in an array format.');
+    tasksContainer.innerHTML = '<p>Error fetching tasks.</p>';
+    return;
+  }
+
+  tasks.forEach(task => {
+    const taskElement = document.createElement('div');
+    taskElement.classList.add('col-12', 'task-item');
+
+    // Add task content and actions (Complete, Delete)
+    taskElement.innerHTML = `
+      <div class="task">
+        <p>${task.content}</p>
+        <button class="btn btn-success mark-complete" data-id="${task.id}">
+          ${task.completed ? 'Mark Active' : 'Mark Complete'}
+        </button>
+        <button class="btn btn-danger delete-task" data-id="${task.id}">Delete</button>
+      </div>
+    `;
+    tasksContainer.appendChild(taskElement);
+  });
+
+  // Attach event listeners for complete and delete buttons
+  document.querySelectorAll('.mark-complete').forEach(button => {
+    button.addEventListener('click', markComplete);
+  });
+
+  document.querySelectorAll('.delete-task').forEach(button => {
+    button.addEventListener('click', deleteTask);
+  });
+}
+
+// Mark task as complete or active
+function markComplete(event) {
+  const taskId = event.target.getAttribute('data-id');
+  const task = tasks.find(task => task.id == taskId);
+  if (task) {
+    task.completed = !task.completed;  // Toggle completed status
+    renderTasks();  // Re-render tasks
+  }
+}
+
+// Delete a task
+function deleteTask(event) {
+  const taskId = event.target.getAttribute('data-id');
+  const taskIndex = tasks.findIndex(task => task.id == taskId);
+  if (taskIndex !== -1) {
+    tasks.splice(taskIndex, 1);  // Remove task from array
+    renderTasks();  // Re-render tasks
+  }
+}
+
+// Add a new task
+document.getElementById('add-task-button').addEventListener('click', () => {
+  const taskContent = document.getElementById('new-task-content').value;
+
+  if (taskContent.trim()) {
+    const newTask = {
+      id: tasks.length + 1,  // Simple way to generate a new task ID
+      content: taskContent,
+      completed: false
+    };
+    tasks.push(newTask);  // Add new task to array
+    document.getElementById('new-task-content').value = '';  // Clear input field
+    renderTasks();  // Re-render tasks
+  }
+});
+
+// Load the tasks when the page loads
+document.addEventListener('DOMContentLoaded', renderTasks);
+</script>
