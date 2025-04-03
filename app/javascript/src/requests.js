@@ -6,29 +6,51 @@ $.ajaxSetup({
   }
 });
 
-export var indexTasks = function (successCB, errorCB) {
-  var request = {
+// Fetch all tasks
+export var indexTasks = function(successCB, errorCB) {
+  $.ajax({
     type: 'GET',
-    url: 'api/tasks?api_key=1',
+    url: '/api/tasks?api_key=1',
     success: successCB,
-    error: errorCB
-  }
-
-  $.ajax(request);
+    error: errorCB || function(err) {
+      console.error("Error fetching tasks:", err);
+    }
+  });
 };
 
-export var postTask = function (content, successCB, errorCB) {
-  var request = {
+// Create a new task
+export var postTask = function(content, successCB, errorCB) {
+  $.ajax({
     type: 'POST',
-    url: 'api/tasks?api_key=1',
-    data: {
-      task: {
-        content: content
-      }
-    },
+    url: '/api/tasks?api_key=1',
+    data: { task: { content: content } },
     success: successCB,
-    error: errorCB
-  }
+    error: errorCB || function(err) {
+      console.error("Error adding task:", err);
+    }
+  });
+};
 
-  $.ajax(request);
+// Mark a task as complete
+export var markComplete = function(taskId, successCB, errorCB) {
+  $.ajax({
+    type: 'PUT',
+    url: `/api/tasks/${taskId}/mark_complete?api_key=1`,
+    success: successCB,
+    error: errorCB || function(err) {
+      console.error("Error marking task complete:", err);
+    }
+  });
+};
+
+// Delete a task
+export var deleteTask = function(taskId, successCB, errorCB) {
+  $.ajax({
+    type: 'DELETE',
+    url: `/api/tasks/${taskId}?api_key=1`,
+    success: successCB,
+    error: errorCB || function(err) {
+      console.error("Error deleting task:", err);
+    }
+  });
 };
